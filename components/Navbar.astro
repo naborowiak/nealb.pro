@@ -1,0 +1,148 @@
+---
+const navItems = [
+  { href: "#", label: "Home" },
+  { href: "#work", label: "Work" },
+  { href: "#about", label: "About" },
+  { href: "#contact", label: "Contact" }
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 transition-transform duration-300">
+  <nav class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <a href="#" class="text-xl font-bold gradient-text">NB</a>
+      
+      <ul class="hidden md:flex space-x-8">
+        {navItems.map(item => (
+          <li>
+            <a 
+              href={item.href}
+              class="text-gray-300 hover:text-white transition-colors"
+              data-nav-link
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <button 
+        class="md:hidden p-2 text-gray-300 hover:text-white"
+        aria-label="Toggle menu"
+        id="menu-toggle"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu - hidden by default -->
+  <div 
+    id="mobile-menu" 
+    class="fixed inset-0 bg-[#020817]/95 backdrop-blur-lg pointer-events-none opacity-0 md:hidden"
+    style="transition: opacity 0.3s ease-in-out"
+  >
+    <div class="container mx-auto px-6 py-8">
+      <button 
+        class="absolute top-4 right-6 p-2 text-gray-300 hover:text-white"
+        aria-label="Close menu"
+        id="menu-close"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <ul class="flex flex-col space-y-6 mt-8">
+        {navItems.map(item => (
+          <li>
+            <a 
+              href={item.href}
+              class="text-2xl text-gray-300 hover:text-white transition-colors block"
+              data-nav-link
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('header');
+  const menuToggle = document.getElementById('menu-toggle');
+  const menuClose = document.getElementById('menu-close');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const navLinks = document.querySelectorAll('[data-nav-link]');
+
+  // Toggle mobile menu
+  const toggleMenu = () => {
+    if (mobileMenu) {
+      const isHidden = mobileMenu.classList.contains('pointer-events-none');
+      if (isHidden) {
+        mobileMenu.classList.remove('pointer-events-none', 'opacity-0');
+      } else {
+        mobileMenu.classList.add('pointer-events-none', 'opacity-0');
+      }
+    }
+  };
+
+  menuToggle?.addEventListener('click', toggleMenu);
+  menuClose?.addEventListener('click', toggleMenu);
+
+  // Smooth scroll for navigation links
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = link.getAttribute('href');
+      
+      // Close mobile menu first if open
+      if (mobileMenu && !mobileMenu.classList.contains('pointer-events-none')) {
+        toggleMenu();
+      }
+
+      // Small delay to allow menu to close before scrolling
+      setTimeout(() => {
+        if (href === '#') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          const target = document.querySelector(href);
+          if (target) {
+            const headerHeight = header?.offsetHeight || 0;
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+          }
+        }
+      }, 300);
+    });
+  });
+
+  // Hide/show header on scroll
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+    
+    if (currentScroll <= 0) {
+      header?.classList.remove('-translate-y-full');
+      return;
+    }
+    
+    if (currentScroll > lastScroll && !header?.classList.contains('-translate-y-full')) {
+      header?.classList.add('-translate-y-full');
+    } else if (currentScroll < lastScroll && header?.classList.contains('-translate-y-full')) {
+      header?.classList.remove('-translate-y-full');
+    }
+    
+    lastScroll = currentScroll;
+  });
+</script>
+
+<style>
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600;
+  }
+</style>

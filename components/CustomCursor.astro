@@ -1,0 +1,98 @@
+<div id="custom-cursor" class="fixed pointer-events-none z-50 opacity-0 transition-opacity duration-300">
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+</div>
+
+<style>
+  #custom-cursor {
+    mix-blend-mode: difference;
+  }
+
+  .cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    position: fixed;
+    top: -4px;
+    left: -4px;
+    transform-origin: center;
+  }
+
+  .cursor-ring {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    position: fixed;
+    top: -20px;
+    left: -20px;
+    transition: all 0.1s ease-out;
+    transform-origin: center;
+  }
+
+  .cursor-hover {
+    transform: scale(1.5);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0);
+  }
+</style>
+
+<script>
+  const cursor = document.getElementById('custom-cursor');
+  const dot = cursor?.querySelector('.cursor-dot');
+  const ring = cursor?.querySelector('.cursor-ring');
+  
+  let mouseX = 0;
+  let mouseY = 0;
+  let dotX = 0;
+  let dotY = 0;
+  let ringX = 0;
+  let ringY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (cursor) cursor.style.opacity = '1';
+  });
+
+  const updateCursor = () => {
+    // Smooth dot movement
+    dotX += (mouseX - dotX) * 0.2;
+    dotY += (mouseY - dotY) * 0.2;
+    
+    // Smoother ring movement
+    ringX += (mouseX - ringX) * 0.1;
+    ringY += (mouseY - ringY) * 0.1;
+
+    if (dot) {
+      dot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+    }
+    
+    if (ring) {
+      ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+    }
+
+    requestAnimationFrame(updateCursor);
+  };
+
+  // Add hover effect for interactive elements
+  const interactiveElements = document.querySelectorAll('a, button, input, textarea');
+  interactiveElements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring?.classList.add('cursor-hover');
+    });
+    
+    el.addEventListener('mouseleave', () => {
+      ring?.classList.remove('cursor-hover');
+    });
+  });
+
+  // Hide cursor when it leaves the window
+  document.addEventListener('mouseleave', () => {
+    if (cursor) cursor.style.opacity = '0';
+  });
+
+  // Start the animation
+  updateCursor();
+</script> 

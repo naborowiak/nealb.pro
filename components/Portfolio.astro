@@ -1,0 +1,111 @@
+---
+interface Project {
+  title: string;
+  description: string;
+  image: string;
+  tech: string[];
+}
+
+interface Props {
+  items: Project[];
+}
+
+const { items } = Astro.props;
+---
+
+<section id="work" class="py-20 relative">
+  <div class="absolute inset-0 z-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#020817] via-purple-900/10 to-[#020817] opacity-30"></div>
+  </div>
+
+  <div class="container relative z-10">
+    <h2 class="text-4xl md:text-5xl font-bold text-center mb-8">
+      Featured <span class="gradient-text">Work</span>
+    </h2>
+    <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+      A selection of my recent projects, exploring the intersection of design and technology.
+    </p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {items.map((project, index) => (
+        <div 
+          class="group perspective"
+          data-index={index}
+        >
+          <article class="project-card relative aspect-[4/3] bg-gradient-to-br from-purple-900/30 to-pink-900/30 rounded-lg overflow-hidden transition-all duration-500 preserve-3d">
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            <div class="absolute inset-0 p-6 flex flex-col justify-end transform translate-z-20 backface-hidden">
+              <h3 class="text-2xl font-bold">{project.title}</h3>
+              <p class="text-gray-300 mt-2">{project.description}</p>
+              <div class="flex flex-wrap gap-2 mt-4">
+                {project.tech.map(tech => (
+                  <span class="px-3 py-1 bg-white/10 rounded-full text-sm">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+              <button class="px-6 py-3 bg-white/20 rounded-full text-white font-semibold hover:bg-white/30 transition-colors">
+                View Project
+              </button>
+            </div>
+          </article>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const cards = document.querySelectorAll('.project-card');
+  
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = (y - centerY) / 20;
+      const rotateY = (centerX - x) / 20;
+      
+      card.style.transform = `
+        rotateX(${rotateX}deg) 
+        rotateY(${rotateY}deg)
+        scale3d(1.05, 1.05, 1.05)
+      `;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+    });
+  });
+</script>
+
+<style>
+  .perspective {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .translate-z-20 {
+    transform: translateZ(20px);
+  }
+
+  .project-card {
+    transform: translateZ(0);
+    transition: transform 0.3s ease-out;
+  }
+</style> 
